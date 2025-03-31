@@ -1,4 +1,5 @@
 import React from "react";
+import { useEscapeKey } from "../../hooks/useEscapeKey";
 
 export const ToastContext = React.createContext({});
 
@@ -27,19 +28,13 @@ export function ToastProvider({ children }) {
     [setNotifications]
   );
 
-  React.useEffect(() => {
-    function onKeydown(e) {
-      if (e.code === "Escape") {
-        setNotifications((notifications) => {
-          return notifications.length > 0 ? [] : notifications;
-        });
-      }
-    }
-    window.addEventListener("keydown", onKeydown);
-    return () => {
-      window.removeEventListener("keydown", onKeydown);
-    };
+  const clearNotifications = React.useCallback(() => {
+    setNotifications((notifications) => {
+      return notifications.length > 0 ? [] : notifications;
+    });
   }, [setNotifications]);
+
+  useEscapeKey(clearNotifications);
 
   const context = {
     notifications,
