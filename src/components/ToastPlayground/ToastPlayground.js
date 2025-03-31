@@ -1,7 +1,7 @@
 import React from "react";
 
 import Button from "../Button";
-import Toast from "../Toast";
+import ToastShelf from "../ToastShelf";
 
 import styles from "./ToastPlayground.module.css";
 
@@ -10,7 +10,43 @@ const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 function ToastPlayground() {
   const [message, setMessage] = React.useState("");
   const [variant, setVariant] = React.useState(VARIANT_OPTIONS[0]);
-  const [isToastVisible, setIsToastVisible] = React.useState(false);
+  const [notifications, setNotifications] = React.useState(() => {
+    return [];
+  });
+
+  const removeNotification = React.useCallback(
+    (notificationToRemove) => {
+      setNotifications((notifications) =>
+        notifications.filter(
+          (notification) => notification !== notificationToRemove
+        )
+      );
+    },
+    [setNotifications]
+  );
+
+  const appendNotification = React.useCallback(
+    ({ variant, message }) => {
+      const key = window.crypto.randomUUID();
+      setNotifications((notifications) => [
+        ...notifications,
+        { key, variant, message },
+      ]);
+    },
+    [setNotifications]
+  );
+
+  const onSubmit = React.useCallback(
+    (e) => {
+      e.preventDefault();
+      if (message === "") {
+        return;
+      }
+      appendNotification({ variant, message });
+      setMessage("");
+    },
+    [variant, message, setMessage, appendNotification]
+  );
 
   const onMessageChange = React.useCallback(
     (e) => {
@@ -26,13 +62,6 @@ function ToastPlayground() {
     [setVariant]
   );
 
-  const hideToast = React.useCallback(() => {
-    setIsToastVisible(false);
-  }, [setIsToastVisible]);
-  const showToast = React.useCallback(() => {
-    setIsToastVisible(true);
-  }, [setIsToastVisible]);
-
   return (
     <div className={styles.wrapper}>
       <header>
@@ -40,13 +69,12 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      {isToastVisible && (
-        <Toast variant={variant} onClose={hideToast}>
-          {message}
-        </Toast>
-      )}
+      <ToastShelf
+        notifications={notifications}
+        removeNotification={removeNotification}
+      />
 
-      <div className={styles.controlsWrapper}>
+      <form className={styles.controlsWrapper} onSubmit={onSubmit}>
         <div className={styles.row}>
           <label
             htmlFor="message"
@@ -87,10 +115,10 @@ function ToastPlayground() {
         <div className={styles.row}>
           <div className={styles.label} />
           <div className={`${styles.inputWrapper} ${styles.radioWrapper}`}>
-            <Button onClick={showToast}>Pop Toast!</Button>
+            <Button disabled={message === ""}>Pop Toast!</Button>
           </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }
