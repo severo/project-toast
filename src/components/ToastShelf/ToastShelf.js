@@ -2,8 +2,11 @@ import React from "react";
 
 import Toast from "../Toast";
 import styles from "./ToastShelf.module.css";
+import { ToastContext } from "../ToastProvider";
 
-function ToastShelf({ notifications, removeNotification }) {
+function ToastShelf() {
+  const { notifications, removeNotification } = React.useContext(ToastContext);
+
   return (
     <ol className={styles.wrapper}>
       {notifications.map((notification) => {

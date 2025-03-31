@@ -2,6 +2,7 @@ import React from "react";
 
 import Button from "../Button";
 import ToastShelf from "../ToastShelf";
+import { ToastContext } from "../ToastProvider";
 
 import styles from "./ToastPlayground.module.css";
 
@@ -10,31 +11,7 @@ const VARIANT_OPTIONS = ["notice", "warning", "success", "error"];
 function ToastPlayground() {
   const [message, setMessage] = React.useState("");
   const [variant, setVariant] = React.useState(VARIANT_OPTIONS[0]);
-  const [notifications, setNotifications] = React.useState(() => {
-    return [];
-  });
-
-  const removeNotification = React.useCallback(
-    (notificationToRemove) => {
-      setNotifications((notifications) =>
-        notifications.filter(
-          (notification) => notification !== notificationToRemove
-        )
-      );
-    },
-    [setNotifications]
-  );
-
-  const appendNotification = React.useCallback(
-    ({ variant, message }) => {
-      const key = window.crypto.randomUUID();
-      setNotifications((notifications) => [
-        ...notifications,
-        { key, variant, message },
-      ]);
-    },
-    [setNotifications]
-  );
+  const { appendNotification } = React.useContext(ToastContext);
 
   const onSubmit = React.useCallback(
     (e) => {
@@ -44,6 +21,7 @@ function ToastPlayground() {
       }
       appendNotification({ variant, message });
       setMessage("");
+      setVariant(VARIANT_OPTIONS[0]);
     },
     [variant, message, setMessage, appendNotification]
   );
@@ -69,10 +47,7 @@ function ToastPlayground() {
         <h1>Toast Playground</h1>
       </header>
 
-      <ToastShelf
-        notifications={notifications}
-        removeNotification={removeNotification}
-      />
+      <ToastShelf />
 
       <form className={styles.controlsWrapper} onSubmit={onSubmit}>
         <div className={styles.row}>
