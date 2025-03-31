@@ -8,22 +8,20 @@ export function ToastProvider({ children }) {
   });
 
   const removeNotification = React.useCallback(
-    (notificationToRemove) => {
-      setNotifications((notifications) =>
-        notifications.filter(
-          (notification) => notification !== notificationToRemove
-        )
-      );
+    (id) => {
+      setNotifications((notifications) => {
+        return notifications.filter((notification) => notification.id !== id);
+      });
     },
     [setNotifications]
   );
 
   const appendNotification = React.useCallback(
     ({ variant, message }) => {
-      const key = window.crypto.randomUUID();
+      const id = window.crypto.randomUUID();
       setNotifications((notifications) => [
         ...notifications,
-        { key, variant, message },
+        { id, variant, message },
       ]);
     },
     [setNotifications]

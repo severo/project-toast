@@ -5,7 +5,7 @@ import styles from "./ToastShelf.module.css";
 import { ToastContext } from "../ToastProvider";
 
 function ToastShelf() {
-  const { notifications, removeNotification } = React.useContext(ToastContext);
+  const { notifications } = React.useContext(ToastContext);
 
   return (
     <ol className={styles.wrapper}>
@@ -13,10 +13,7 @@ function ToastShelf() {
         const { id, message, variant } = notification;
         return (
           <li className={styles.toastWrapper} key={id}>
-            <Toast
-              variant={variant}
-              onClose={() => removeNotification(notification)}
-            >
+            <Toast variant={variant} id={id}>
               {message}
             </Toast>
           </li>
