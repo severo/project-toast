@@ -27,6 +27,20 @@ export function ToastProvider({ children }) {
     [setNotifications]
   );
 
+  React.useEffect(() => {
+    function onKeydown(e) {
+      if (e.code === "Escape") {
+        setNotifications((notifications) => {
+          return notifications.length > 0 ? [] : notifications;
+        });
+      }
+    }
+    window.addEventListener("keydown", onKeydown);
+    return () => {
+      window.removeEventListener("keydown", onKeydown);
+    };
+  }, [setNotifications]);
+
   const context = {
     notifications,
     appendNotification,
